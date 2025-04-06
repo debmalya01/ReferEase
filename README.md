@@ -131,7 +131,78 @@ git push origin feature/your-feature-name
 
 5. **Open a Pull Request**
 
-### Contribution Guidelines
+## Branch Strategy
+
+When working on the ReferEase project, we follow a structured branching strategy to keep development organized:
+
+### Main Branches
+
+#### `master`
+- The main production branch
+- Always contains stable, deployable code
+- Direct commits are not allowed - changes come through pull requests
+
+### Supporting Branches
+
+#### `feature/*`
+- Created for developing new features
+- Example: `feature/feature_applicant_review_ui` or `feature/feature_job_posting_form`
+- Branched from: `master`
+- Merged back into: `master` (via pull request)
+- Naming convention: `feature/feature_descriptive_feature_name`
+
+#### `enhancement/*`
+- Used for improving existing features
+- Example: `enhancement/enhancement_profile_validation` or `enhancement/enhancement_job_card_ui`
+- Branched from: `master`
+- Merged back into: `master` (via pull request)
+- Naming convention: `enhancement/enhancement_what_is_being_enhanced`
+
+#### `issue/*`
+- Created to fix reported issues or bugs
+- Example: `issue/issue_profile_update_error` or `issue/issue_42` (using issue number)
+- Branched from: `master`
+- Merged back into: `master` (via pull request)
+- Naming convention: `issue/issue_number_or_description`
+
+#### `hotfix/*`
+- For urgent fixes to production code
+- Example: `hotfix/hotfix_auth_security_vulnerability`
+- Branched from: `master`
+- Merged back into: `master` (via pull request)
+- Naming convention: `hotfix/hotfix_what_is_being_fixed`
+
+### Branch Workflow Guidelines
+
+1. **Starting a new feature/enhancement**:
+   ```bash
+   git checkout master
+   git pull
+   git checkout -b feature/your-feature-name
+   ```
+
+2. **Keeping your branch updated**:
+   ```bash
+   git checkout master
+   git pull
+   git checkout feature/your-feature-name
+   git merge master
+   # Resolve any conflicts
+   ```
+
+3. **Creating a Pull Request**:
+   - Once your feature is complete, create a pull request via GitHub
+   - Request code reviews from team members
+   - After approval, merge into `master`
+
+### Best Practices
+
+- Keep branches focused on single features/issues
+- Make regular, small commits with descriptive messages
+- Pull from `master` regularly to minimize merge conflicts
+- Delete branches after they've been merged
+
+## Contribution Guidelines
 
 - Follow the existing code style and conventions
 - Write clear, descriptive commit messages
