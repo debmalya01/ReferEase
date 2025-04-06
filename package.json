@@ -1,0 +1,44 @@
+{
+  "name": "referrease",
+  "version": "1.0.0",
+  "description": "A gamified job referral web application",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "concurrently \"npm run server:dev\" \"npm run client:dev\"",
+    "server:dev": "nodemon server/server.js",
+    "client:dev": "cd client && npm start",
+    "install:all": "npm install && cd client && npm install",
+    "test": "jest"
+  },
+  "keywords": [
+    "job-referral",
+    "recruitment",
+    "web-application"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@radix-ui/react-select": "^2.1.6",
+    "@radix-ui/react-slot": "^1.1.2",
+    "aws-sdk": "^2.1473.0",
+    "bcryptjs": "^2.4.3",
+    "clsx": "^2.1.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^7.6.3",
+    "multer": "^1.4.5-lts.1",
+    "socket.io": "^4.7.2",
+    "tailwind-merge": "^3.1.0"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.21",
+    "concurrently": "^8.2.1",
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.1",
+    "postcss": "^8.5.3",
+    "tailwindcss": "^4.1.3"
+  }
+}
