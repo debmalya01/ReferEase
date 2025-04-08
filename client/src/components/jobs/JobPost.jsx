@@ -71,14 +71,14 @@ const JobPost = ({ onSubmit, loading: externalLoading, error, onClose }) => {
   };
 
   return (
-    <Card className="w-full max-w-3xl mx-auto border-0 shadow-md">
+    <Card className="w-full max-w-3xl mx-auto border-border shadow-md bg-card">
       <CardHeader>
         <CardTitle className="text-2xl font-bold">Post a Job Opportunity</CardTitle>
         <CardDescription>Fill out the details to create a new job posting</CardDescription>
       </CardHeader>
       <CardContent>
         {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-md">
+          <div className="mb-4 p-3 bg-destructive/20 border border-destructive text-destructive-foreground rounded-md">
             {error.message || 'An error occurred while posting the job.'}
           </div>
         )}
@@ -95,7 +95,7 @@ const JobPost = ({ onSubmit, loading: externalLoading, error, onClose }) => {
                     placeholder="e.g. Frontend Developer"
                     value={jobData.title}
                     onChange={handleChange}
-                    className="pl-10 border-slate-200"
+                    className="pl-10 border-border bg-secondary"
                     required
                   />
                 </div>
@@ -111,7 +111,7 @@ const JobPost = ({ onSubmit, loading: externalLoading, error, onClose }) => {
                     placeholder="e.g. Acme Inc."
                     value={jobData.company}
                     onChange={handleChange}
-                    className="pl-10 border-slate-200"
+                    className="pl-10 border-border bg-secondary"
                     required
                   />
                 </div>
@@ -129,7 +129,7 @@ const JobPost = ({ onSubmit, loading: externalLoading, error, onClose }) => {
                     placeholder="e.g. Remote, New York, etc."
                     value={jobData.location}
                     onChange={handleChange}
-                    className="pl-10 border-slate-200"
+                    className="pl-10 border-border bg-secondary"
                     required
                   />
                 </div>
@@ -145,7 +145,7 @@ const JobPost = ({ onSubmit, loading: externalLoading, error, onClose }) => {
                     placeholder="e.g. $80,000 - $100,000"
                     value={jobData.salary}
                     onChange={handleChange}
-                    className="pl-10 border-slate-200"
+                    className="pl-10 border-border bg-secondary"
                   />
                 </div>
               </div>
@@ -158,7 +158,7 @@ const JobPost = ({ onSubmit, loading: externalLoading, error, onClose }) => {
                   value={jobData.type}
                   onValueChange={(value) => handleSelectChange(value, 'type')}
                 >
-                  <SelectTrigger className="border-slate-200">
+                  <SelectTrigger className="border-border bg-secondary">
                     <SelectValue placeholder="Select job type" />
                   </SelectTrigger>
                   <SelectContent>
@@ -177,7 +177,7 @@ const JobPost = ({ onSubmit, loading: externalLoading, error, onClose }) => {
                   value={jobData.experience}
                   onValueChange={(value) => handleSelectChange(value, 'experience')}
                 >
-                  <SelectTrigger className="border-slate-200">
+                  <SelectTrigger className="border-border bg-secondary">
                     <SelectValue placeholder="Select experience level" />
                   </SelectTrigger>
                   <SelectContent>
@@ -201,8 +201,7 @@ const JobPost = ({ onSubmit, loading: externalLoading, error, onClose }) => {
                   placeholder="e.g. React, Node.js, MongoDB (comma separated)"
                   value={jobData.skills}
                   onChange={handleChange}
-                  className="pl-10 border-slate-200"
-                  required
+                  className="pl-10 border-border bg-secondary"
                 />
               </div>
             </div>
@@ -212,15 +211,15 @@ const JobPost = ({ onSubmit, loading: externalLoading, error, onClose }) => {
               <Textarea
                 id="description"
                 name="description"
-                placeholder="Enter a detailed description of the job role, responsibilities, and requirements..."
+                placeholder="Enter detailed job description, responsibilities, and requirements..."
                 value={jobData.description}
                 onChange={handleChange}
-                className="min-h-32 border-slate-200"
+                className="min-h-[150px] border-border bg-secondary"
                 required
               />
             </div>
           </div>
-
+          
           <div className="flex justify-end space-x-2">
             {onClose && (
               <Button type="button" variant="outline" onClick={onClose}>
@@ -228,7 +227,7 @@ const JobPost = ({ onSubmit, loading: externalLoading, error, onClose }) => {
               </Button>
             )}
             <Button type="submit" disabled={loading}>
-              {loading ? 'Posting...' : 'Post Job Opportunity'}
+              {loading ? 'Posting...' : 'Post Job'}
             </Button>
           </div>
         </form>

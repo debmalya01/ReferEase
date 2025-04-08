@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button } from '../../components/ui/button';
@@ -8,7 +8,7 @@ import { Alert, AlertDescription } from '../../components/ui/alert';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../../components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
 import { register } from '../../store/slices/authSlice';
-import { ArrowLeft, Briefcase } from 'lucide-react';
+import { ArrowLeft, Crown } from 'lucide-react';
 
 const Register = () => {
   const dispatch = useDispatch();
@@ -23,6 +23,11 @@ const Register = () => {
     role: ''
   });
   const [passwordError, setPasswordError] = useState('');
+
+  useEffect(() => {
+    // Apply dark mode class to document
+    document.documentElement.classList.add('dark');
+  }, []);
 
   const handleChange = (e) => {
     setFormData({
@@ -66,7 +71,7 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-white to-slate-50">
+    <div className="min-h-screen flex flex-col bg-background text-foreground">
       <div className="container flex-1 flex items-center justify-center py-8">
         <div className="w-full max-w-[500px] space-y-6">
           <div className="flex items-center justify-between">
@@ -77,13 +82,13 @@ const Register = () => {
                 </Link>
               </Button>
               <div className="flex items-center space-x-2">
-                <Briefcase className="h-6 w-6 text-primary" />
+                <Crown className="h-6 w-6 text-primary" />
                 <h1 className="text-2xl font-bold text-primary">ReferEase</h1>
               </div>
             </div>
           </div>
           
-          <Card className="border-0 shadow-lg">
+          <Card className="border-border shadow-lg bg-card">
             <CardHeader className="space-y-1">
               <CardTitle className="text-2xl">Create an account</CardTitle>
               <CardDescription>
@@ -112,7 +117,7 @@ const Register = () => {
                       value={formData.firstName}
                       onChange={handleChange}
                       required
-                      className="border-slate-200"
+                      className="border-border bg-secondary"
                     />
                   </div>
                   <div className="space-y-2">
@@ -124,7 +129,7 @@ const Register = () => {
                       value={formData.lastName}
                       onChange={handleChange}
                       required
-                      className="border-slate-200"
+                      className="border-border bg-secondary"
                     />
                   </div>
                 </div>
@@ -138,7 +143,7 @@ const Register = () => {
                     value={formData.email}
                     onChange={handleChange}
                     required
-                    className="border-slate-200"
+                    className="border-border bg-secondary"
                   />
                 </div>
                 <div className="space-y-2">
@@ -150,7 +155,7 @@ const Register = () => {
                     value={formData.password}
                     onChange={handleChange}
                     required
-                    className="border-slate-200"
+                    className="border-border bg-secondary"
                   />
                 </div>
                 <div className="space-y-2">
@@ -162,7 +167,7 @@ const Register = () => {
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     required
-                    className="border-slate-200"
+                    className="border-border bg-secondary"
                   />
                 </div>
                 <div className="space-y-2">
@@ -172,7 +177,7 @@ const Register = () => {
                     onValueChange={handleRoleChange}
                     required
                   >
-                    <SelectTrigger className="border-slate-200">
+                    <SelectTrigger className="border-border bg-secondary">
                       <SelectValue placeholder="Select your role" />
                     </SelectTrigger>
                     <SelectContent>
