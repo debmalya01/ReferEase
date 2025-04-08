@@ -13,7 +13,8 @@ import {
   LogOut,
   MessageSquare,
   Settings,
-  ChevronDown
+  ChevronDown,
+  Crown
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
@@ -43,6 +44,8 @@ const Layout = () => {
 
   useEffect(() => {
     dispatch(fetchNotifications());
+    // Add dark mode class to document
+    document.documentElement.classList.add('dark');
   }, [dispatch]);
 
   const handleDrawerToggle = () => {
@@ -68,12 +71,15 @@ const Layout = () => {
   ];
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-b from-white to-slate-50">
+    <div className="flex min-h-screen bg-background text-foreground">
       {/* Mobile Sidebar */}
       <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-        <SheetContent side="left" className="w-64 p-0">
-          <SheetHeader className="p-6 border-b">
-            <SheetTitle className="text-2xl font-bold">ReferEase</SheetTitle>
+        <SheetContent side="left" className="w-64 p-0 bg-card border-r border-border">
+          <SheetHeader className="p-6 border-b border-border">
+            <SheetTitle className="text-2xl font-bold flex items-center gap-2">
+              <Crown className="h-6 w-6 text-primary" />
+              ReferEase
+            </SheetTitle>
           </SheetHeader>
           <div className="py-4">
             <nav className="space-y-1 px-2">
@@ -81,18 +87,18 @@ const Layout = () => {
                 <Link
                   key={item.text}
                   to={item.path}
-                  className="flex items-center px-4 py-3 text-sm rounded-md hover:bg-slate-100 transition-colors"
+                  className="flex items-center px-4 py-3 text-sm rounded-md hover:bg-secondary transition-colors"
                   onClick={() => setMobileOpen(false)}
                 >
-                  <span className="text-slate-500 mr-3">{item.icon}</span>
+                  <span className="text-muted-foreground mr-3">{item.icon}</span>
                   <span>{item.text}</span>
                 </Link>
               ))}
               <button
                 onClick={handleLogout}
-                className="flex items-center w-full px-4 py-3 text-sm rounded-md hover:bg-slate-100 transition-colors text-left"
+                className="flex items-center w-full px-4 py-3 text-sm rounded-md hover:bg-secondary transition-colors text-left"
               >
-                <span className="text-slate-500 mr-3">
+                <span className="text-muted-foreground mr-3">
                   <LogOut className="h-5 w-5" />
                 </span>
                 <span>Logout</span>
@@ -103,9 +109,12 @@ const Layout = () => {
       </Sheet>
 
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex w-64 flex-col border-r bg-white">
-        <div className="p-6 border-b">
-          <h1 className="text-2xl font-bold">ReferEase</h1>
+      <aside className="hidden lg:flex w-64 flex-col border-r border-border bg-card">
+        <div className="p-6 border-b border-border">
+          <h1 className="text-2xl font-bold flex items-center gap-2">
+            <Crown className="h-6 w-6 text-primary" />
+            ReferEase
+          </h1>
         </div>
         <div className="py-4 flex-1">
           <nav className="space-y-1 px-2">
@@ -113,20 +122,20 @@ const Layout = () => {
               <Link
                 key={item.text}
                 to={item.path}
-                className="flex items-center px-4 py-3 text-sm rounded-md hover:bg-slate-100 transition-colors"
+                className="flex items-center px-4 py-3 text-sm rounded-md hover:bg-secondary transition-colors"
               >
-                <span className="text-slate-500 mr-3">{item.icon}</span>
+                <span className="text-muted-foreground mr-3">{item.icon}</span>
                 <span>{item.text}</span>
               </Link>
             ))}
           </nav>
         </div>
-        <div className="p-4 border-t">
+        <div className="p-4 border-t border-border">
           <button
             onClick={handleLogout}
-            className="flex items-center w-full px-4 py-3 text-sm rounded-md hover:bg-slate-100 transition-colors text-left"
+            className="flex items-center w-full px-4 py-3 text-sm rounded-md hover:bg-secondary transition-colors text-left"
           >
-            <span className="text-slate-500 mr-3">
+            <span className="text-muted-foreground mr-3">
               <LogOut className="h-5 w-5" />
             </span>
             <span>Logout</span>
@@ -137,7 +146,7 @@ const Layout = () => {
       {/* Main Content */}
       <div className="flex flex-col flex-1">
         {/* Header */}
-        <header className="sticky top-0 z-10 bg-white/80 backdrop-blur-sm border-b h-16 flex items-center px-4">
+        <header className="sticky top-0 z-10 bg-card/80 backdrop-blur-sm border-b border-border h-16 flex items-center px-4">
           <div className="flex-1 flex items-center">
             {/* Mobile menu button */}
             <SheetTrigger asChild className="lg:hidden">
@@ -172,7 +181,7 @@ const Layout = () => {
                   <ChevronDown className="ml-2 h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuContent align="end" className="w-56 bg-card border-border">
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
                     <p className="text-sm font-medium">{user?.firstName} {user?.lastName}</p>

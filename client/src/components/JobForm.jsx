@@ -100,7 +100,7 @@ const JobForm = ({ isOpen, onClose }) => {
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
-                className="w-full px-3 py-2 rounded-md border border-input bg-background"
+                className="w-full px-3 py-2 rounded-md border border-input bg-secondary"
                 required
               />
             </div>
@@ -111,7 +111,7 @@ const JobForm = ({ isOpen, onClose }) => {
                 name="company"
                 value={formData.company}
                 onChange={handleChange}
-                className="w-full px-3 py-2 rounded-md border border-input bg-background"
+                className="w-full px-3 py-2 rounded-md border border-input bg-secondary"
                 required
               />
             </div>
@@ -124,7 +124,7 @@ const JobForm = ({ isOpen, onClose }) => {
               name="location"
               value={formData.location}
               onChange={handleChange}
-              className="w-full px-3 py-2 rounded-md border border-input bg-background"
+              className="w-full px-3 py-2 rounded-md border border-input bg-secondary"
               required
             />
           </div>
@@ -136,7 +136,7 @@ const JobForm = ({ isOpen, onClose }) => {
               value={formData.description}
               onChange={handleChange}
               rows={4}
-              className="w-full px-3 py-2 rounded-md border border-input bg-background"
+              className="w-full px-3 py-2 rounded-md border border-input bg-secondary"
               required
             />
           </div>
@@ -149,7 +149,7 @@ const JobForm = ({ isOpen, onClose }) => {
                 name="salary.min"
                 value={formData.salary.min}
                 onChange={handleChange}
-                className="w-full px-3 py-2 rounded-md border border-input bg-background"
+                className="w-full px-3 py-2 rounded-md border border-input bg-secondary"
                 required
               />
             </div>
@@ -160,7 +160,7 @@ const JobForm = ({ isOpen, onClose }) => {
                 name="salary.max"
                 value={formData.salary.max}
                 onChange={handleChange}
-                className="w-full px-3 py-2 rounded-md border border-input bg-background"
+                className="w-full px-3 py-2 rounded-md border border-input bg-secondary"
                 required
               />
             </div>
@@ -173,7 +173,7 @@ const JobForm = ({ isOpen, onClose }) => {
                 name="jobType"
                 value={formData.jobType}
                 onChange={handleChange}
-                className="w-full px-3 py-2 rounded-md border border-input bg-background"
+                className="w-full px-3 py-2 rounded-md border border-input bg-secondary"
                 required
               >
                 <option value="">Select Job Type</option>
@@ -188,7 +188,7 @@ const JobForm = ({ isOpen, onClose }) => {
                 name="experienceLevel"
                 value={formData.experienceLevel}
                 onChange={handleChange}
-                className="w-full px-3 py-2 rounded-md border border-input bg-background"
+                className="w-full px-3 py-2 rounded-md border border-input bg-secondary"
                 required
               >
                 <option value="">Select Experience Level</option>
@@ -218,7 +218,7 @@ const JobForm = ({ isOpen, onClose }) => {
                 type="text"
                 value={req}
                 onChange={(e) => handleArrayChange('requirements', index, e.target.value)}
-                className="w-full px-3 py-2 rounded-md border border-input bg-background"
+                className="w-full px-3 py-2 rounded-md border border-input bg-secondary"
                 placeholder={`Requirement ${index + 1}`}
                 required
               />
@@ -244,7 +244,7 @@ const JobForm = ({ isOpen, onClose }) => {
                 type="text"
                 value={skill}
                 onChange={(e) => handleArrayChange('skills', index, e.target.value)}
-                className="w-full px-3 py-2 rounded-md border border-input bg-background"
+                className="w-full px-3 py-2 rounded-md border border-input bg-secondary"
                 placeholder={`Skill ${index + 1}`}
                 required
               />
