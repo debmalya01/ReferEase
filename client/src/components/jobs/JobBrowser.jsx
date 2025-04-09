@@ -5,7 +5,7 @@ import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';
 import { fetchJobs } from '../../store/slices/jobSlice';
 import { createReferral } from '../../store/slices/referralSlice';
-import { CheckCircle, XCircle, MapPin, Clock, Building2, Award, CreditCard, Briefcase } from 'lucide-react';
+import { CheckCircle, XCircle, MapPin, Clock, Building2, Award, CreditCard, Briefcase, DollarSign } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const JobBrowser = () => {
@@ -22,7 +22,11 @@ const JobBrowser = () => {
   const handleAccept = async (jobId) => {
     setActionLoading(true);
     try {
-      await dispatch(createReferral({ jobId, status: 'pending' })).unwrap();
+      await dispatch(createReferral({ 
+        jobId, 
+        referrerId: currentJob.postedBy,
+        status: 'pending' 
+      })).unwrap();
       setDirection('right');
       setTimeout(() => {
         setCurrentIndex(prevIndex => prevIndex + 1);
@@ -141,9 +145,9 @@ const JobBrowser = () => {
                 </div>
                 
                 {currentJob.salary && (
-                  <div className="flex items-center col-span-2">
-                    <CreditCard className="h-4 w-4 mr-2 text-muted-foreground" />
-                    <span>{currentJob.salary}</span>
+                  <div className="flex items-center space-x-2">
+                    <DollarSign className="h-4 w-4 text-primary" />
+                    <span>{currentJob.salary?.min && currentJob.salary?.max ? `${currentJob.salary.currency} ${currentJob.salary.min} - ${currentJob.salary.max}` : 'Salary not specified'}</span>
                   </div>
                 )}
               </div>

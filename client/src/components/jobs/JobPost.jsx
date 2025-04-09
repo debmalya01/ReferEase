@@ -19,11 +19,16 @@ const JobPost = ({ onSubmit, loading: externalLoading, error, onClose }) => {
     title: '',
     company: '',
     location: '',
-    type: 'full-time',
-    experience: 'entry',
-    salary: '',
-    skills: '',
-    description: ''
+    jobType: 'full-time',
+    experienceLevel: 'entry',
+    salary: {
+      min: '',
+      max: '',
+      currency: 'USD'
+    },
+    skills: [],
+    description: '',
+    requirements: ['']
   });
 
   // Use external loading state if provided, otherwise use internal
@@ -31,10 +36,21 @@ const JobPost = ({ onSubmit, loading: externalLoading, error, onClose }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setJobData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    if (name.includes('.')) {
+      const [parent, child] = name.split('.');
+      setJobData(prev => ({
+        ...prev,
+        [parent]: {
+          ...prev[parent],
+          [child]: value
+        }
+      }));
+    } else {
+      setJobData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
   };
 
   const handleSelectChange = (value, name) => {
@@ -44,23 +60,38 @@ const JobPost = ({ onSubmit, loading: externalLoading, error, onClose }) => {
     }));
   };
 
+  const handleSkillsChange = (e) => {
+    const skills = e.target.value.split(',').map(skill => skill.trim());
+    setJobData(prev => ({
+      ...prev,
+      skills
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Convert skills string to array
+    // Validate required fields
+    if (!jobData.title || !jobData.company || !jobData.location || !jobData.description) {
+      console.error('Missing required fields');
+      return;
+    }
+
+    // Convert salary strings to numbers
     const formattedData = {
       ...jobData,
-      skills: jobData.skills.split(',').map(skill => skill.trim())
+      salary: {
+        ...jobData.salary,
+        min: Number(jobData.salary.min),
+        max: Number(jobData.salary.max)
+      }
     };
     
     if (onSubmit) {
-      // Use the external onSubmit function if provided
       onSubmit(formattedData);
     } else {
-      // Otherwise use the internal logic
       setInternalLoading(true);
       try {
-        // Your internal submit logic here if needed
         setInternalLoading(false);
         if (onClose) onClose();
       } catch (error) {
@@ -136,16 +167,18 @@ const JobPost = ({ onSubmit, loading: externalLoading, error, onClose }) => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="salary">Salary Range</Label>
+                <Label htmlFor="salary.min">Minimum Salary</Label>
                 <div className="relative">
                   <CreditCard className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
-                    id="salary"
-                    name="salary"
-                    placeholder="e.g. $80,000 - $100,000"
-                    value={jobData.salary}
+                    id="salary.min"
+                    name="salary.min"
+                    type="number"
+                    placeholder="e.g. 80000"
+                    value={jobData.salary.min}
                     onChange={handleChange}
                     className="pl-10 border-border bg-secondary"
+                    required
                   />
                 </div>
               </div>
@@ -153,10 +186,27 @@ const JobPost = ({ onSubmit, loading: externalLoading, error, onClose }) => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="type">Job Type</Label>
+                <Label htmlFor="salary.max">Maximum Salary</Label>
+                <div className="relative">
+                  <CreditCard className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="salary.max"
+                    name="salary.max"
+                    type="number"
+                    placeholder="e.g. 100000"
+                    value={jobData.salary.max}
+                    onChange={handleChange}
+                    className="pl-10 border-border bg-secondary"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="jobType">Job Type</Label>
                 <Select
-                  value={jobData.type}
-                  onValueChange={(value) => handleSelectChange(value, 'type')}
+                  value={jobData.jobType}
+                  onValueChange={(value) => handleSelectChange(value, 'jobType')}
                 >
                   <SelectTrigger className="border-border bg-secondary">
                     <SelectValue placeholder="Select job type" />
@@ -165,44 +215,42 @@ const JobPost = ({ onSubmit, loading: externalLoading, error, onClose }) => {
                     <SelectItem value="full-time">Full-time</SelectItem>
                     <SelectItem value="part-time">Part-time</SelectItem>
                     <SelectItem value="contract">Contract</SelectItem>
-                    <SelectItem value="internship">Internship</SelectItem>
-                    <SelectItem value="freelance">Freelance</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="experience">Experience Level</Label>
-                <Select
-                  value={jobData.experience}
-                  onValueChange={(value) => handleSelectChange(value, 'experience')}
-                >
-                  <SelectTrigger className="border-border bg-secondary">
-                    <SelectValue placeholder="Select experience level" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="entry">Entry Level (0-2 years)</SelectItem>
-                    <SelectItem value="mid">Mid Level (3-5 years)</SelectItem>
-                    <SelectItem value="senior">Senior Level (5+ years)</SelectItem>
-                    <SelectItem value="lead">Lead/Manager</SelectItem>
-                    <SelectItem value="executive">Executive</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="skills">Required Skills</Label>
-              <div className="relative">
-                <Award className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="skills"
-                  name="skills"
-                  placeholder="e.g. React, Node.js, MongoDB (comma separated)"
-                  value={jobData.skills}
-                  onChange={handleChange}
-                  className="pl-10 border-border bg-secondary"
-                />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="experienceLevel">Experience Level</Label>
+                <Select
+                  value={jobData.experienceLevel}
+                  onValueChange={(value) => handleSelectChange(value, 'experienceLevel')}
+                >
+                  <SelectTrigger className="border-border bg-secondary">
+                    <SelectValue placeholder="Select experience level" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="entry">Entry Level</SelectItem>
+                    <SelectItem value="mid">Mid Level</SelectItem>
+                    <SelectItem value="senior">Senior Level</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="skills">Required Skills</Label>
+                <div className="relative">
+                  <Award className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="skills"
+                    name="skills"
+                    placeholder="e.g. React, Node.js, MongoDB (comma separated)"
+                    value={jobData.skills.join(', ')}
+                    onChange={handleSkillsChange}
+                    className="pl-10 border-border bg-secondary"
+                  />
+                </div>
               </div>
             </div>
 

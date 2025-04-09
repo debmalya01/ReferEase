@@ -57,7 +57,9 @@ const JobCard = ({ job, onAccept, onReject, status }) => {
           </div>
           <div className="bg-secondary/30 rounded-lg p-3 transition-colors group-hover:bg-secondary/40 flex items-center">
             <DollarSign className="h-4 w-4 text-primary mr-2" />
-            <span className="text-sm">{salary}</span>
+            <span className="text-sm">
+              {salary?.min && salary?.max ? `${salary.currency} ${salary.min} - ${salary.max}` : 'Salary not specified'}
+            </span>
           </div>
         </div>
 

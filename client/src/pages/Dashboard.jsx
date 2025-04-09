@@ -150,14 +150,24 @@ const Dashboard = () => {
                 Here's an overview of your job activities
               </p>
             </div>
-            <Button 
-              variant="outline" 
-              className="space-x-2 border-primary/30 hover:bg-primary/10 hover:text-primary"
-              onClick={() => navigate('/notifications')}
-            >
-              <Bell className="h-4 w-4" />
-              <span>Notifications ({notifications?.length || 0})</span>
-            </Button>
+            <div className="flex space-x-2">
+              <Button 
+                variant="outline" 
+                className="space-x-2 border-primary/30 hover:bg-primary/10 hover:text-primary"
+                onClick={() => navigate('/applications')}
+              >
+                <Users className="h-4 w-4" />
+                <span>Applications</span>
+              </Button>
+              <Button 
+                variant="outline" 
+                className="space-x-2 border-primary/30 hover:bg-primary/10 hover:text-primary"
+                onClick={() => navigate('/notifications')}
+              >
+                <Bell className="h-4 w-4" />
+                <span>Notifications ({notifications?.length || 0})</span>
+              </Button>
+            </div>
           </div>
         </div>
 
