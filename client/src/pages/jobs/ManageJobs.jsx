@@ -108,7 +108,7 @@ const ManageJobs = () => {
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">Salary</p>
-                    <p>{job.salary?.min && job.salary?.max ? `${job.salary.currency} ${job.salary.min} - ${job.salary.max}` : 'Salary not specified'}</p>
+r                    <p>{job.salary?.min && job.salary?.max ? `${job.salary.currency} ${job.salary.min} - ${job.salary.max}` : 'Salary not specified'}</p>
                   </div>
                 </div>
 
