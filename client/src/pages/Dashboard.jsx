@@ -154,6 +154,14 @@ const Dashboard = () => {
               <Button 
                 variant="outline" 
                 className="space-x-2 border-primary/30 hover:bg-primary/10 hover:text-primary"
+                onClick={() => navigate('/my-jobs')}
+              >
+                <Briefcase className="h-4 w-4" />
+                <span>My Jobs</span>
+              </Button>
+              <Button 
+                variant="outline" 
+                className="space-x-2 border-primary/30 hover:bg-primary/10 hover:text-primary"
                 onClick={() => navigate('/applications')}
               >
                 <Users className="h-4 w-4" />

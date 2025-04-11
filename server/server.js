@@ -4,6 +4,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const http = require('http');
 const socketIo = require('socket.io');
+const path = require('path');
 
 // Load environment variables
 dotenv.config();
@@ -40,12 +41,28 @@ io.on('connection', (socket) => {
   });
 });
 
-// Routes (to be implemented)
+// API Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/users', require('./routes/users'));
 app.use('/api/jobs', require('./routes/jobs'));
 app.use('/api/referrals', require('./routes/referrals'));
 app.use('/api/notifications', require('./routes/notifications'));
+
+// Serve static files from the React app
+if (process.env.NODE_ENV === 'production') {
+  // Set static folder
+  app.use(express.static(path.join(__dirname, '../client/build')));
+
+  // Handle React routing, return all requests to React app
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
+  });
+} else {
+  // In development, proxy requests to the React dev server
+  app.get('*', (req, res) => {
+    res.redirect(process.env.CLIENT_URL || 'http://localhost:3000');
+  });
+}
 
 // Error handling middleware
 app.use((err, req, res, next) => {

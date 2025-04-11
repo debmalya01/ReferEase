@@ -14,6 +14,10 @@ const JobBrowser = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(null);
   const [actionLoading, setActionLoading] = useState(false);
+  const { user } = useSelector((state) => state.auth);
+
+  // No need to filter jobs here as the server handles it
+  const filteredJobs = jobs;
 
   useEffect(() => {
     dispatch(fetchJobs());
@@ -22,9 +26,14 @@ const JobBrowser = () => {
   const handleAccept = async (jobId) => {
     setActionLoading(true);
     try {
+      const job = filteredJobs.find(j => j._id === jobId);
+      if (!job) {
+        throw new Error('Job not found');
+      }
+
       await dispatch(createReferral({ 
         jobId, 
-        referrerId: currentJob.postedBy,
+        referrerId: job.postedBy,
         status: 'pending' 
       })).unwrap();
       setDirection('right');
@@ -60,7 +69,7 @@ const JobBrowser = () => {
   };
 
   // No jobs case
-  if (jobs.length === 0) {
+  if (filteredJobs.length === 0) {
     return (
       <Card className="max-w-lg mx-auto mt-8 border-border bg-card shadow-md">
         <CardContent className="flex flex-col items-center justify-center p-10">
@@ -75,7 +84,7 @@ const JobBrowser = () => {
   }
 
   // All jobs viewed case
-  if (currentIndex >= jobs.length) {
+  if (currentIndex >= filteredJobs.length) {
     return (
       <Card className="max-w-lg mx-auto mt-8 border-border bg-card shadow-md">
         <CardContent className="flex flex-col items-center justify-center p-10">
@@ -95,7 +104,7 @@ const JobBrowser = () => {
     );
   }
 
-  const currentJob = jobs[currentIndex];
+  const currentJob = filteredJobs[currentIndex];
 
   return (
     <div className="max-w-lg mx-auto p-4">
@@ -197,7 +206,7 @@ const JobBrowser = () => {
       </AnimatePresence>
       
       <div className="mt-6 text-center text-sm text-muted-foreground">
-        {currentIndex + 1} of {jobs.length} jobs
+        {currentIndex + 1} of {filteredJobs.length} jobs
       </div>
     </div>
   );

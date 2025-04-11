@@ -5,25 +5,37 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../co
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
-import { fetchJobs, fetchReferrals } from '../store/slices/jobSlice';
+import { fetchMyJobs, fetchReferrals } from '../store/slices/jobSlice';
 import { Building2, Users, CheckCircle, XCircle, Eye, Heart, Plus, Search } from 'lucide-react';
 
 const Applications = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
-  const { jobs, referrals, loading } = useSelector((state) => state.jobs);
+  const { myJobs, referrals, loading } = useSelector((state) => state.jobs);
 
   useEffect(() => {
-    dispatch(fetchJobs());
+    dispatch(fetchMyJobs());
     dispatch(fetchReferrals());
   }, [dispatch]);
 
+  // Debug logs
+  useEffect(() => {
+    console.log('Jobs:', myJobs);
+    console.log('User:', user);
+    console.log('Posted Jobs:', myJobs);
+  }, [myJobs, user, myJobs]);
+
   // Get the jobs posted by the current user
-  const postedJobs = jobs?.filter(job => job.postedBy === user?._id) || [];
+  const postedJobs = myJobs || [];
   
   // Get the jobs applied to by the current user
-  const appliedJobs = referrals?.filter(ref => ref.applicant === user?._id) || [];
+  const appliedJobs = referrals?.filter(ref => {
+    // Convert both IDs to strings for comparison
+    const applicantId = ref.applicant?.toString();
+    const userId = user?._id?.toString();
+    return applicantId === userId;
+  }) || [];
   
   // Count applicants for each job
   const getApplicantCounts = (jobId) => {
@@ -81,6 +93,16 @@ const Applications = () => {
         </TabsList>
         
         <TabsContent value="posted">
+          <div className="flex justify-end mb-4">
+            <Button 
+              onClick={() => navigate('/my-jobs')}
+              variant="outline"
+              className="border-primary/30 hover:bg-primary/10 hover:text-primary"
+            >
+              <Building2 className="h-4 w-4 mr-2" />
+              View All My Jobs
+            </Button>
+          </div>
           {postedJobs.length === 0 ? (
             <Card className="border-border bg-card/60 backdrop-blur-sm hover:bg-card/80 transition-all duration-300 shadow-md overflow-hidden">
               <CardContent className="p-8 text-center">
