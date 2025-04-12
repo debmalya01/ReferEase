@@ -21,6 +21,7 @@ import Applications from './pages/Applications';
 import Notifications from './pages/Notifications.jsx';
 import Profile from './pages/Profile.jsx';
 import ReviewApplicants from './pages/ReviewApplicants.jsx';
+import MyJobs from './components/jobs/MyJobs';
 // import Messages from './pages/Messages';
 // import Settings from './pages/Settings';
 
@@ -46,6 +47,7 @@ function App() {
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/review-applicants/:jobId" element={<ReviewApplicants />} />
+          <Route path="/my-jobs" element={<MyJobs />} />
           {/* <Route path="/messages" element={<Messages />} />
           <Route path="/settings" element={<Settings />} /> */}
         </Route>
