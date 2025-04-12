@@ -5,7 +5,7 @@ import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';
 import { fetchJobs } from '../../store/slices/jobSlice';
 import { createReferral } from '../../store/slices/referralSlice';
-import { CheckCircle, XCircle, MapPin, Clock, Building2, Award, CreditCard, Briefcase } from 'lucide-react';
+import { CheckCircle, XCircle, MapPin, Clock, Building2, Award, CreditCard, Briefcase, DollarSign } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const JobBrowser = () => {
@@ -14,6 +14,10 @@ const JobBrowser = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(null);
   const [actionLoading, setActionLoading] = useState(false);
+  const { user } = useSelector((state) => state.auth);
+
+  // No need to filter jobs here as the server handles it
+  const filteredJobs = jobs;
 
   useEffect(() => {
     dispatch(fetchJobs());
@@ -22,7 +26,16 @@ const JobBrowser = () => {
   const handleAccept = async (jobId) => {
     setActionLoading(true);
     try {
-      await dispatch(createReferral({ jobId, status: 'pending' })).unwrap();
+      const job = filteredJobs.find(j => j._id === jobId);
+      if (!job) {
+        throw new Error('Job not found');
+      }
+
+      await dispatch(createReferral({ 
+        jobId, 
+        referrerId: job.postedBy,
+        status: 'pending' 
+      })).unwrap();
       setDirection('right');
       setTimeout(() => {
         setCurrentIndex(prevIndex => prevIndex + 1);
@@ -56,9 +69,9 @@ const JobBrowser = () => {
   };
 
   // No jobs case
-  if (jobs.length === 0) {
+  if (filteredJobs.length === 0) {
     return (
-      <Card className="max-w-lg mx-auto mt-8 border-0 shadow-md">
+      <Card className="max-w-lg mx-auto mt-8 border-border bg-card shadow-md">
         <CardContent className="flex flex-col items-center justify-center p-10">
           <Briefcase className="w-12 h-12 text-muted-foreground mb-4" />
           <h3 className="text-xl font-semibold mb-2">No Jobs Found</h3>
@@ -71,9 +84,9 @@ const JobBrowser = () => {
   }
 
   // All jobs viewed case
-  if (currentIndex >= jobs.length) {
+  if (currentIndex >= filteredJobs.length) {
     return (
-      <Card className="max-w-lg mx-auto mt-8 border-0 shadow-md">
+      <Card className="max-w-lg mx-auto mt-8 border-border bg-card shadow-md">
         <CardContent className="flex flex-col items-center justify-center p-10">
           <CheckCircle className="w-12 h-12 text-primary mb-4" />
           <h3 className="text-xl font-semibold mb-2">All Caught Up!</h3>
@@ -91,7 +104,7 @@ const JobBrowser = () => {
     );
   }
 
-  const currentJob = jobs[currentIndex];
+  const currentJob = filteredJobs[currentIndex];
 
   return (
     <div className="max-w-lg mx-auto p-4">
@@ -110,7 +123,7 @@ const JobBrowser = () => {
           transition={{ type: 'spring', damping: 15 }}
           className="relative"
         >
-          <Card className="border-0 shadow-lg bg-white">
+          <Card className="border-border shadow-lg bg-card">
             <CardHeader className="pb-2">
               <div className="flex justify-between items-start">
                 <div>
@@ -141,9 +154,9 @@ const JobBrowser = () => {
                 </div>
                 
                 {currentJob.salary && (
-                  <div className="flex items-center col-span-2">
-                    <CreditCard className="h-4 w-4 mr-2 text-muted-foreground" />
-                    <span>{currentJob.salary}</span>
+                  <div className="flex items-center space-x-2">
+                    <DollarSign className="h-4 w-4 text-primary" />
+                    <span>{currentJob.salary?.min && currentJob.salary?.max ? `${currentJob.salary.currency} ${currentJob.salary.min} - ${currentJob.salary.max}` : 'Salary not specified'}</span>
                   </div>
                 )}
               </div>
@@ -193,7 +206,7 @@ const JobBrowser = () => {
       </AnimatePresence>
       
       <div className="mt-6 text-center text-sm text-muted-foreground">
-        {currentIndex + 1} of {jobs.length} jobs
+        {currentIndex + 1} of {filteredJobs.length} jobs
       </div>
     </div>
   );
