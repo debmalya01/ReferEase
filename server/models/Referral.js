@@ -36,7 +36,7 @@ const referralSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['pending', 'shortlisted', 'referred', 'rejected', 'hired'],
+    enum: ['pending', 'accepted', 'rejected'],
     default: 'pending'
   },
   notes: String,

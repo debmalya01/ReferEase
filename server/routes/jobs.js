@@ -102,8 +102,8 @@ router.put('/:jobId/applicants/:referralId', auth, async (req, res) => {
 
     referral.status = status;
     referral.interactions.push({
-      type: 'status',
-      initiator: 'job_poster',
+      type: 'message',
+      initiator: 'referrer',
       content: `Status updated to ${status}`
     });
 
