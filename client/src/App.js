@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { Toaster } from 'sonner';
 
 // Layout components
 import Layout from './components/layout/Layout';
@@ -30,6 +31,7 @@ function App() {
 
   return (
     <Router>
+      <Toaster position="top-right" richColors />
       <Routes>
         {/* Public routes */}
         <Route path="/" element={!isAuthenticated ? <Home /> : <Navigate to="/dashboard" />} />
