@@ -8,7 +8,7 @@ import { Alert, AlertDescription } from '../../components/ui/alert';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../../components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
 import { register } from '../../store/slices/authSlice';
-import { ArrowLeft, Crown } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 
 const Register = () => {
   const dispatch = useDispatch();
@@ -81,10 +81,15 @@ const Register = () => {
                   <ArrowLeft className="h-4 w-4" />
                 </Link>
               </Button>
-              <div className="flex items-center space-x-2">
-                <Crown className="h-6 w-6 text-primary" />
-                <h1 className="text-2xl font-bold text-primary">ReferEase</h1>
-              </div>
+              <Link to="/" className="flex items-center">
+                <div className="h-10 flex items-center overflow-hidden">
+                  <img 
+                    src="/BackDoor_Logo_Dark1.png" 
+                    alt="BackDoor Logo" 
+                    className="max-h-[200%] w-auto" 
+                  />
+                </div>
+              </Link>
             </div>
           </div>
           
