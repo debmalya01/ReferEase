@@ -22,9 +22,31 @@ axiosAuth.interceptors.request.use((config) => {
 
 export const fetchJobs = createAsyncThunk(
   'jobs/fetchJobs',
-  async (filters = {}, { rejectWithValue }) => {
+  async (_, { getState }) => {
+    const { auth } = getState();
+    const response = await axiosAuth.get('/jobs', {
+      headers: { Authorization: `Bearer ${auth.token}` }
+    });
+    return response.data;
+  }
+);
+
+export const fetchJobById = createAsyncThunk(
+  'jobs/fetchJobById',
+  async (jobId, { getState }) => {
+    const { auth } = getState();
+    const response = await axiosAuth.get(`/jobs/${jobId}`, {
+      headers: { Authorization: `Bearer ${auth.token}` }
+    });
+    return response.data;
+  }
+);
+
+export const fetchMyJobs = createAsyncThunk(
+  'jobs/fetchMyJobs',
+  async (_, { rejectWithValue }) => {
     try {
-      const response = await axiosAuth.get('/jobs', { params: filters });
+      const response = await axiosAuth.get('/jobs/my-jobs');
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -80,8 +102,21 @@ export const deleteJob = createAsyncThunk(
   }
 );
 
+export const rejectJob = createAsyncThunk(
+  'jobs/rejectJob',
+  async (jobId, { rejectWithValue }) => {
+    try {
+      await axiosAuth.post(`/jobs/${jobId}/reject`);
+      return jobId;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 const initialState = {
   jobs: [],
+  myJobs: [],
   referrals: [],
   currentJob: null,
   loading: false,
@@ -124,6 +159,19 @@ const jobSlice = createSlice({
       })
       .addCase(fetchJobs.rejected, (state, action) => {
         state.loading = false;
+        state.error = action.error.message;
+      })
+      // Fetch My Jobs
+      .addCase(fetchMyJobs.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchMyJobs.fulfilled, (state, action) => {
+        state.loading = false;
+        state.myJobs = action.payload;
+      })
+      .addCase(fetchMyJobs.rejected, (state, action) => {
+        state.loading = false;
         state.error = action.payload;
       })
       // Fetch Referrals
@@ -147,6 +195,7 @@ const jobSlice = createSlice({
       .addCase(createJob.fulfilled, (state, action) => {
         state.loading = false;
         state.jobs.push(action.payload);
+        state.myJobs.push(action.payload);
       })
       .addCase(createJob.rejected, (state, action) => {
         state.loading = false;
@@ -163,6 +212,10 @@ const jobSlice = createSlice({
         if (index !== -1) {
           state.jobs[index] = action.payload;
         }
+        const myIndex = state.myJobs.findIndex(job => job._id === action.payload._id);
+        if (myIndex !== -1) {
+          state.myJobs[myIndex] = action.payload;
+        }
       })
       .addCase(updateJob.rejected, (state, action) => {
         state.loading = false;
@@ -176,8 +229,36 @@ const jobSlice = createSlice({
       .addCase(deleteJob.fulfilled, (state, action) => {
         state.loading = false;
         state.jobs = state.jobs.filter(job => job._id !== action.payload);
+        state.myJobs = state.myJobs.filter(job => job._id !== action.payload);
       })
       .addCase(deleteJob.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // Fetch Job by ID
+      .addCase(fetchJobById.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchJobById.fulfilled, (state, action) => {
+        state.loading = false;
+        state.currentJob = action.payload;
+      })
+      .addCase(fetchJobById.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      // Reject Job
+      .addCase(rejectJob.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(rejectJob.fulfilled, (state, action) => {
+        state.loading = false;
+        // Remove the rejected job from the jobs list
+        state.jobs = state.jobs.filter(job => job._id !== action.payload);
+      })
+      .addCase(rejectJob.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

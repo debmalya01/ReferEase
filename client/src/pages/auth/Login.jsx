@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button } from '../../components/ui/button';
@@ -18,6 +18,11 @@ const Login = () => {
     password: '',
   });
 
+  useEffect(() => {
+    // Apply dark mode class to document
+    document.documentElement.classList.add('dark');
+  }, []);
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -34,7 +39,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-white to-slate-50">
+    <div className="min-h-screen flex flex-col bg-background text-foreground">
       <div className="container flex-1 flex items-center justify-center">
         <div className="w-full max-w-[400px] space-y-6">
           <div className="flex items-center justify-between">
@@ -51,7 +56,7 @@ const Login = () => {
             </div>
           </div>
           
-          <Card className="border-0 shadow-lg">
+          <Card className="border-border shadow-lg bg-card">
             <CardHeader className="space-y-1">
               <CardTitle className="text-2xl">Welcome back</CardTitle>
               <CardDescription>
@@ -75,7 +80,7 @@ const Login = () => {
                     value={formData.email}
                     onChange={handleChange}
                     required
-                    className="border-slate-200"
+                    className="border-border bg-secondary"
                   />
                 </div>
                 <div className="space-y-2">
@@ -95,7 +100,7 @@ const Login = () => {
                     value={formData.password}
                     onChange={handleChange}
                     required
-                    className="border-slate-200"
+                    className="border-border bg-secondary"
                   />
                 </div>
               </CardContent>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { Toaster } from 'sonner';
 
 // Layout components
 import Layout from './components/layout/Layout';
@@ -21,6 +22,7 @@ import Applications from './pages/Applications';
 import Notifications from './pages/Notifications.jsx';
 import Profile from './pages/Profile.jsx';
 import ReviewApplicants from './pages/ReviewApplicants.jsx';
+import MyJobs from './components/jobs/MyJobs';
 // import Messages from './pages/Messages';
 // import Settings from './pages/Settings';
 
@@ -29,6 +31,7 @@ function App() {
 
   return (
     <Router>
+      <Toaster position="top-right" richColors />
       <Routes>
         {/* Public routes */}
         <Route path="/" element={!isAuthenticated ? <Home /> : <Navigate to="/dashboard" />} />
@@ -46,6 +49,7 @@ function App() {
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/review-applicants/:jobId" element={<ReviewApplicants />} />
+          <Route path="/my-jobs" element={<MyJobs />} />
           {/* <Route path="/messages" element={<Messages />} />
           <Route path="/settings" element={<Settings />} /> */}
         </Route>

@@ -1,51 +1,56 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchJobs } from '../store/slices/jobSlice';
+import { fetchJobById } from '../store/slices/jobSlice';
 import ApplicantReview from '../components/jobs/ApplicantReview';
-import { Card, CardContent } from '../components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
-import { ArrowLeft, Building2, MapPin, Briefcase } from 'lucide-react';
+import { ArrowLeft, Building2, MapPin, Briefcase, Crown } from 'lucide-react';
+import { Badge } from '../components/ui/badge';
 
 const ReviewApplicants = () => {
   const { jobId } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { jobs, loading } = useSelector(state => state.jobs);
-  const [job, setJob] = useState(null);
+  const { currentJob, loading } = useSelector(state => state.jobs);
+  const { user } = useSelector(state => state.auth);
 
   useEffect(() => {
-    dispatch(fetchJobs());
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (jobs.length > 0 && jobId) {
-      const foundJob = jobs.find(j => j._id === jobId);
-      if (foundJob) {
-        setJob(foundJob);
-      }
+    if (jobId) {
+      dispatch(fetchJobById(jobId));
     }
-  }, [jobs, jobId]);
+  }, [dispatch, jobId]);
 
   if (loading) {
     return (
-      <div className="max-w-4xl mx-auto p-4">
+      <div className="p-6 space-y-8 max-w-7xl mx-auto">
         <div className="flex items-center justify-center h-64">
-          <p>Loading job details...</p>
+          <div className="inline-block p-4 bg-primary/10 rounded-full text-primary animate-pulse mb-4">
+            <Crown className="h-10 w-10" />
+          </div>
+          <p className="text-lg text-muted-foreground ml-4">Loading job details...</p>
         </div>
       </div>
     );
   }
 
-  if (!job) {
+  if (!currentJob) {
     return (
-      <div className="max-w-4xl mx-auto p-4">
+      <div className="p-6 space-y-8 max-w-7xl mx-auto">
         <div className="flex items-center justify-center h-64">
-          <Card className="border-0 shadow-md p-6">
-            <CardContent className="flex flex-col items-center text-center">
-              <h2 className="text-xl font-semibold mb-2">Job Not Found</h2>
-              <p className="text-muted-foreground mb-4">The job you're looking for doesn't exist or you don't have permission to view it.</p>
-              <Button onClick={() => navigate('/applications')}>Back to Applications</Button>
+          <Card className="border-border bg-card/60 backdrop-blur-sm hover:bg-card/80 transition-all duration-300 shadow-md overflow-hidden">
+            <CardContent className="p-12 text-center">
+              <Building2 className="h-16 w-16 mx-auto text-primary/30 mb-4" />
+              <h2 className="text-xl font-semibold mb-2 text-primary/90">Job Not Found</h2>
+              <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                The job you're looking for doesn't exist or you don't have permission to view it.
+              </p>
+              <Button 
+                onClick={() => navigate('/applications')} 
+                className="bg-primary hover:bg-primary/90 transition-colors"
+              >
+                Back to Applications
+              </Button>
             </CardContent>
           </Card>
         </div>
@@ -54,39 +59,59 @@ const ReviewApplicants = () => {
   }
 
   return (
-    <div className="max-w-5xl mx-auto p-4">
-      <div className="mb-8">
+    <div className="p-6 space-y-8 max-w-7xl mx-auto">
+      {/* Header with gradient background */}
+      <div className="relative rounded-xl bg-gradient-to-r from-primary/20 via-background to-card/80 p-6 shadow-md mb-8">
         <Button 
           variant="ghost" 
-          className="mb-4" 
+          size="sm" 
+          className="mb-4 hover:bg-primary/10" 
           onClick={() => navigate('/applications')}
         >
-          <ArrowLeft className="h-4 w-4 mr-2" /> Back to Applications
+          <ArrowLeft className="h-4 w-4 mr-1" /> Back to Applications
         </Button>
         
-        <div className="bg-white p-6 rounded-lg shadow-md border border-slate-100 mb-6">
-          <h1 className="text-2xl font-bold mb-2">{job.title}</h1>
-          <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mb-4">
-            <div className="flex items-center">
-              <Building2 className="h-4 w-4 mr-1" />
-              <span>{job.company}</span>
+        <div className="flex justify-between items-start">
+          <div>
+            <h1 className="text-3xl font-bold text-primary mb-2">{currentJob.title}</h1>
+            <div className="flex flex-wrap gap-4 text-sm text-primary/80 mb-4">
+              <div className="flex items-center">
+                <Building2 className="h-4 w-4 mr-1" />
+                <span>{currentJob.company}</span>
+              </div>
+              <div className="flex items-center">
+                <MapPin className="h-4 w-4 mr-1" />
+                <span>{currentJob.location}</span>
+              </div>
+              <div className="flex items-center">
+                <Briefcase className="h-4 w-4 mr-1" />
+                <span>{currentJob.jobType}</span>
+              </div>
             </div>
-            <div className="flex items-center">
-              <MapPin className="h-4 w-4 mr-1" />
-              <span>{job.location}</span>
-            </div>
-            <div className="flex items-center">
-              <Briefcase className="h-4 w-4 mr-1" />
-              <span>{job.type}</span>
-            </div>
+            <p className="text-muted-foreground max-w-2xl">
+              Review applicants and choose the best fit by swiping right to accept or left to reject.
+            </p>
           </div>
-          <p className="text-muted-foreground text-base">
-            Find the perfect match for your job opening. Review applicants and choose the best fit by using the accept/reject buttons!
-          </p>
+          <Badge variant="outline" className="bg-secondary/80 border border-primary/20 flex items-center p-2">
+            <Crown className="h-4 w-4 mr-1 text-primary" />
+            <span>Review Mode</span>
+          </Badge>
         </div>
       </div>
       
-      <ApplicantReview jobId={jobId} />
+      <div className="mb-6">
+        <Card className="border-border bg-card/60 backdrop-blur-sm transition-all duration-300 shadow-md overflow-hidden">
+          <CardHeader className="border-b border-border/30 bg-card/70 pb-4">
+            <CardTitle className="text-xl font-medium flex items-center">
+              <Crown className="h-5 w-5 mr-2 text-primary" />
+              Applicant Review
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <ApplicantReview jobId={jobId} />
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
