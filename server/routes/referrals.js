@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { auth } = require('../middleware/auth');
 const Referral = require('../models/Referral');
+const User = require('../models/User');
 
 // Get all referrals for a user (either as referee, referrer, or job poster)
 router.get('/', auth, async (req, res) => {
@@ -56,6 +57,8 @@ router.get('/:id', auth, async (req, res) => {
 router.post('/', auth, async (req, res) => {
   try {
     const { jobId, referrerId, notes } = req.body;
+    
+    // Create the referral
     const referral = new Referral({
       job: jobId,
       referee: req.user.id,
@@ -68,6 +71,21 @@ router.post('/', auth, async (req, res) => {
       }]
     });
     await referral.save();
+
+    // Add to user's interacted jobs
+    await User.findByIdAndUpdate(
+      req.user.id,
+      {
+        $push: {
+          interactedJobs: {
+            jobId: jobId,
+            status: 'applied',
+            interactedAt: new Date()
+          }
+        }
+      }
+    );
+    
     res.status(201).json(referral);
   } catch (err) {
     console.error(err);
