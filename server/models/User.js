@@ -43,6 +43,21 @@ const userSchema = new mongoose.Schema({
     enum: ['jobseeker', 'referrer', 'recruiter'],
     required: true
   },
+  interactedJobs: [{
+    jobId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Job'
+    },
+    status: {
+      type: String,
+      enum: ['applied', 'rejected'],
+      required: true
+    },
+    interactedAt: {
+      type: Date,
+      default: Date.now
+    }
+  }],
   skills: [{
     type: String,
     trim: true
@@ -118,6 +133,7 @@ userSchema.methods.comparePassword = async function(candidatePassword) {
 userSchema.index({ email: 1 }, { unique: true });
 userSchema.index({ skills: 1 });
 userSchema.index({ preferredRoles: 1 });
+userSchema.index({ 'interactedJobs.jobId': 1 });
 
 const User = mongoose.model('User', userSchema);
 

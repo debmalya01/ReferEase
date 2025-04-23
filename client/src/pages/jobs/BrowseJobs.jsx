@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getJobs, applyForJob } from '../../features/jobs/jobSlice';
+import { fetchJobs as getJobs, rejectJob } from '../../store/slices/jobSlice';
+import { createReferral as applyForJob } from '../../store/slices/referralSlice';
 import JobCard from '../../components/jobs/JobCard';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
@@ -27,9 +28,12 @@ const BrowseJobs = () => {
     await dispatch(applyForJob(jobId));
   };
 
-  const handleReject = (jobId) => {
-    // Handle job rejection (optional)
-    console.log('Job rejected:', jobId);
+  const handleReject = async (jobId) => {
+    try {
+      await dispatch(rejectJob(jobId));
+    } catch (error) {
+      console.error('Error rejecting job:', error);
+    }
   };
 
   const filteredJobs = jobs.filter((job) => {

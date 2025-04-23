@@ -102,6 +102,18 @@ export const deleteJob = createAsyncThunk(
   }
 );
 
+export const rejectJob = createAsyncThunk(
+  'jobs/rejectJob',
+  async (jobId, { rejectWithValue }) => {
+    try {
+      await axiosAuth.post(`/jobs/${jobId}/reject`);
+      return jobId;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 const initialState = {
   jobs: [],
   myJobs: [],
@@ -235,6 +247,20 @@ const jobSlice = createSlice({
       .addCase(fetchJobById.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
+      })
+      // Reject Job
+      .addCase(rejectJob.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(rejectJob.fulfilled, (state, action) => {
+        state.loading = false;
+        // Remove the rejected job from the jobs list
+        state.jobs = state.jobs.filter(job => job._id !== action.payload);
+      })
+      .addCase(rejectJob.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   }
 });
