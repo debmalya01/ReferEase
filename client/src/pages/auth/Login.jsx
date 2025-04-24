@@ -7,7 +7,7 @@ import { Label } from '../../components/ui/label';
 import { Alert, AlertDescription } from '../../components/ui/alert';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../../components/ui/card';
 import { login } from '../../store/slices/authSlice';
-import { ArrowLeft, Briefcase } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -49,10 +49,15 @@ const Login = () => {
                   <ArrowLeft className="h-4 w-4" />
                 </Link>
               </Button>
-              <div className="flex items-center space-x-2">
-                <Briefcase className="h-6 w-6 text-primary" />
-                <h1 className="text-2xl font-bold text-primary">ReferEase</h1>
-              </div>
+              <Link to="/" className="flex items-center">
+                <div className="h-10 flex items-center overflow-hidden">
+                  <img 
+                    src="/BackDoor_Logo_Dark1.png" 
+                    alt="BackDoor Logo" 
+                    className="max-h-[200%] w-auto" 
+                  />
+                </div>
+              </Link>
             </div>
           </div>
           
