@@ -10,8 +10,14 @@ const Navbar = () => {
         <div className="flex justify-between h-16">
           <div className="flex">
             <div className="flex-shrink-0 flex items-center">
-              <Link to="/" className="text-xl font-bold text-gray-900">
-                ReferEase
+              <Link to="/" className="flex items-center">
+                <div className="h-10 flex items-center overflow-hidden">
+                  <img 
+                    src="/BackDoor_Logo_Dark1.png" 
+                    alt="BackDoor Logo" 
+                    className="max-h-[200%] w-auto" 
+                  />
+                </div>
               </Link>
             </div>
           </div>
