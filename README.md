@@ -1,7 +1,7 @@
 # ReferEase
 
 <p align="center">
-  <img src="https://via.placeholder.com/200x200?text=ReferEase" alt="ReferEase Logo" width="200"/>
+  <img src="/client/public/BackDoor_Logo_Dark1.png" alt="BackDoor Logo" width="500"/>
 </p>
 
 ReferEase is a modern job referral platform that connects job seekers with referrers through an intuitive, dating app-inspired interface. The application streamlines the referral process, making it easier for referrers to post job opportunities and review applicants, while allowing job seekers to browse and apply to positions.
@@ -83,7 +83,6 @@ The client should now be running at [http://localhost:3000](http://localhost:300
 referease/
 ├── client/                  # Frontend React application
 │   ├── public/              # Static files
-│   ├── src/                 # React source code
 │   │   ├── components/      # Reusable components
 │   │   │   ├── ui/          # UI components from shadcn
 │   │   │   ├── profile/     # Profile-related components

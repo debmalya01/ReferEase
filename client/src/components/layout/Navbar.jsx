@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../features/auth/authSlice';
 import { Button } from '../ui/button';
-import { Briefcase, User, LogOut, Home } from 'lucide-react';
+import { User, LogOut, Home } from 'lucide-react';
 
 const Navbar = () => {
   const dispatch = useDispatch();
@@ -19,9 +19,14 @@ const Navbar = () => {
     <nav className="bg-white shadow-sm">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          <Link to="/" className="flex items-center space-x-2">
-            <Briefcase className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold">ReferEase</span>
+          <Link to="/" className="flex items-center">
+            <div className="h-16 flex items-center overflow-hidden">
+              <img 
+                src="/BackDoor_Logo_Dark1.png" 
+                alt="BackDoor Logo" 
+                className="max-h-[200%] w-auto" 
+              />
+            </div>
           </Link>
 
           <div className="flex items-center space-x-4">

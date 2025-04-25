@@ -1,8 +1,10 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+
+import { Toaster } from 'sonner';
 import { Provider } from 'react-redux';
-import { ToastContainer } from 'react-toastify';
+// import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { store } from './store';
 
@@ -35,7 +37,7 @@ function App() {
   return (
     <Provider store={store}>
       <Router>
-        <ToastContainer position="top-right" autoClose={3000} />
+        <Toaster position="top-right" richColors />
         <Routes>
           {/* Public routes */}
           <Route path="/" element={!isAuthenticated ? <Home /> : <Navigate to="/dashboard" />} />

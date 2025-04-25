@@ -3,10 +3,11 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';
-import { fetchJobs } from '../../store/slices/jobSlice';
+import { fetchJobs, rejectJob } from '../../store/slices/jobSlice';
 import { createReferral } from '../../store/slices/referralSlice';
-import { CheckCircle, XCircle, MapPin, Clock, Building2, Award, CreditCard, Briefcase, DollarSign } from 'lucide-react';
+import { CheckCircle, XCircle, MapPin, Clock, Building2, Award, CreditCard, Briefcase, DollarSign, RefreshCw, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'sonner';
 
 const JobBrowser = () => {
   const dispatch = useDispatch();
@@ -14,46 +15,177 @@ const JobBrowser = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(null);
   const [actionLoading, setActionLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [errorMsg, setErrorMsg] = useState(null);
+  const [jobsCache, setJobsCache] = useState([]);
   const { user } = useSelector((state) => state.auth);
 
-  // No need to filter jobs here as the server handles it
-  const filteredJobs = jobs;
+  // Use a local cache of jobs to prevent UI flicker during transitions
+  const filteredJobs = jobsCache.length > 0 ? jobsCache : jobs;
 
+  // Fetch jobs on component mount
   useEffect(() => {
     dispatch(fetchJobs());
   }, [dispatch]);
 
+  // Update cache when jobs change, but only if not in the middle of an action
+  useEffect(() => {
+    if (!actionLoading && !refreshing) {
+      setJobsCache(jobs);
+    }
+  }, [jobs, actionLoading, refreshing]);
+
+  // Function to force refresh jobs - but do not update UI immediately to avoid flicker
+  const handleRefreshJobs = (skipUIUpdate = false) => {
+    setRefreshing(true);
+    setErrorMsg(null);
+    
+    return new Promise((resolve) => {
+      // Fetch new jobs data
+      dispatch(fetchJobs())
+        .then(() => {
+          setTimeout(() => {
+            // Only update UI immediately if not skipping
+            if (!skipUIUpdate) {
+              setJobsCache([]); // Clear cache to force update
+              setCurrentIndex(0);
+            }
+            setRefreshing(false);
+            resolve();
+          }, 300);
+        })
+        .catch((error) => {
+          setRefreshing(false);
+          setErrorMsg("Could not refresh jobs. Try again later.");
+          console.error('Error refreshing jobs:', error);
+          resolve();
+        });
+    });
+  };
+
   const handleAccept = async (jobId) => {
+    if (actionLoading) return;
+    
     setActionLoading(true);
+    setErrorMsg(null);
+    
     try {
       const job = filteredJobs.find(j => j._id === jobId);
       if (!job) {
         throw new Error('Job not found');
       }
 
-      await dispatch(createReferral({ 
+      setDirection('right');
+      
+      // Remove job from local cache immediately for smooth transition
+      const updatedJobs = filteredJobs.filter(j => j._id !== jobId);
+      setJobsCache(updatedJobs);
+      
+      // Process the API call in the background
+      dispatch(createReferral({ 
         jobId, 
         referrerId: job.postedBy,
         status: 'pending' 
-      })).unwrap();
-      setDirection('right');
+      })).unwrap()
+      .then(() => {
+        toast.success("Application sent successfully!");
+      })
+      .catch((error) => {
+        console.error('Error accepting job:', error);
+        setErrorMsg("Failed to apply for this job. Please try again.");
+        toast.error("Failed to apply for job");
+        // Restore the cache if there was an error
+        setJobsCache(filteredJobs);
+      });
+      
+      // Move to next card with animation
       setTimeout(() => {
-        setCurrentIndex(prevIndex => prevIndex + 1);
+        const nextIndex = Math.min(currentIndex, updatedJobs.length - 1);
+        setCurrentIndex(nextIndex);
         setDirection(null);
-        setActionLoading(false);
+        
+        // Only refresh job list after a sufficient delay
+        setTimeout(() => {
+          setActionLoading(false);
+          // Refresh in background without affecting UI
+          handleRefreshJobs(true);
+        }, 500);
       }, 300);
     } catch (error) {
       console.error('Error accepting job:', error);
       setActionLoading(false);
+      setErrorMsg("Failed to apply for this job. Please try again.");
+      toast.error("Failed to apply for job");
     }
   };
 
-  const handleReject = () => {
+  const handleReject = async () => {
+    if (actionLoading) return;
+    
+    if (!filteredJobs || filteredJobs.length === 0 || currentIndex >= filteredJobs.length) {
+      console.error('No valid job to reject');
+      return;
+    }
+    
+    setActionLoading(true);
     setDirection('left');
-    setTimeout(() => {
-      setCurrentIndex(prevIndex => prevIndex + 1);
+    setErrorMsg(null);
+    
+    try {
+      // Get the current job ID
+      const currentJob = filteredJobs[currentIndex];
+      
+      if (!currentJob || !currentJob._id) {
+        throw new Error('Current job not found or has no ID');
+      }
+      
+      // Remove job from local cache immediately for smooth transition
+      const jobId = currentJob._id;
+      const updatedJobs = filteredJobs.filter(job => job._id !== jobId);
+      setJobsCache(updatedJobs);
+      
+      console.log('Rejecting job:', jobId);
+      
+      // Process the API call in the background
+      dispatch(rejectJob(jobId)).unwrap()
+      .then(() => {
+        toast.success("Job removed from your list");
+      })
+      .catch((error) => {
+        console.error('Error rejecting job:', error);
+        setErrorMsg("Failed to reject this job. Please try again.");
+        toast.error("Failed to skip job");
+        // Restore the cache if there was an error
+        setJobsCache(filteredJobs);
+      });
+      
+      // Move to next card with animation
+      setTimeout(() => {
+        const nextIndex = Math.min(currentIndex, updatedJobs.length - 1);
+        setCurrentIndex(nextIndex);
+        setDirection(null);
+        
+        // Only refresh job list after a sufficient delay
+        setTimeout(() => {
+          setActionLoading(false);
+          // Refresh in background without affecting UI
+          handleRefreshJobs(true);
+        }, 500);
+      }, 300);
+    } catch (error) {
+      console.error('Error rejecting job:', error);
+      setActionLoading(false);
       setDirection(null);
-    }, 300);
+      setErrorMsg("Failed to reject this job. Please try again.");
+      toast.error("Failed to skip job");
+    }
+  };
+
+  // Reset UI completely and refresh jobs
+  const handleCompleteRefresh = () => {
+    setCurrentIndex(0);
+    setJobsCache([]);
+    handleRefreshJobs(false);
   };
 
   // Format experience level for display
@@ -78,6 +210,20 @@ const JobBrowser = () => {
           <p className="text-muted-foreground text-center">
             There are no job opportunities available at the moment. Please check back later.
           </p>
+          {errorMsg && (
+            <div className="mt-4 p-3 bg-destructive/10 border border-destructive/20 rounded-md text-destructive text-sm flex items-center">
+              <AlertCircle className="h-4 w-4 mr-2" />
+              {errorMsg}
+            </div>
+          )}
+          <Button 
+            onClick={handleCompleteRefresh}
+            className="mt-4"
+            disabled={refreshing}
+          >
+            <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+            {refreshing ? 'Refreshing...' : 'Refresh Jobs'}
+          </Button>
         </CardContent>
       </Card>
     );
@@ -93,26 +239,48 @@ const JobBrowser = () => {
           <p className="text-muted-foreground text-center">
             You've viewed all available job opportunities. Check back soon for new postings.
           </p>
-          <Button 
-            className="mt-6" 
-            onClick={() => setCurrentIndex(0)}
-          >
-            Start Over
-          </Button>
+          {errorMsg && (
+            <div className="mt-4 p-3 bg-destructive/10 border border-destructive/20 rounded-md text-destructive text-sm flex items-center">
+              <AlertCircle className="h-4 w-4 mr-2" />
+              {errorMsg}
+            </div>
+          )}
+          <div className="flex gap-3 mt-6">
+            <Button 
+              onClick={() => setCurrentIndex(0)}
+              variant="outline"
+            >
+              Start Over
+            </Button>
+            <Button 
+              onClick={handleCompleteRefresh}
+              disabled={refreshing}
+            >
+              <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+              {refreshing ? 'Refreshing...' : 'Refresh Jobs'}
+            </Button>
+          </div>
         </CardContent>
       </Card>
     );
   }
-
+  
   const currentJob = filteredJobs[currentIndex];
 
   return (
     <div className="max-w-lg mx-auto p-4">
       <h2 className="text-2xl font-bold mb-6 text-center">Find Your Next Opportunity</h2>
       
-      <AnimatePresence>
+      {errorMsg && (
+        <div className="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-md text-destructive text-sm flex items-center">
+          <AlertCircle className="h-4 w-4 mr-2" />
+          {errorMsg}
+        </div>
+      )}
+      
+      <AnimatePresence mode="wait">
         <motion.div
-          key={currentIndex}
+          key={currentJob?._id || currentIndex}
           initial={{ x: direction === 'left' ? -300 : direction === 'right' ? 300 : 0, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           exit={{ 
