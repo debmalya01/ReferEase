@@ -1,6 +1,10 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { Provider } from 'react-redux';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { store } from './store';
 
 // Layout components
 import Layout from './components/layout/Layout';
@@ -29,33 +33,36 @@ function App() {
   const { isAuthenticated } = useSelector((state) => state.auth);
 
   return (
-    <Router>
-      <Routes>
-        {/* Public routes */}
-        <Route path="/" element={!isAuthenticated ? <Home /> : <Navigate to="/dashboard" />} />
-        <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/dashboard" />} />
-        <Route path="/register" element={!isAuthenticated ? <Register /> : <Navigate to="/dashboard" />} />
-        {/* <Route path="/forgot-password" element={!isAuthenticated ? <ForgotPassword /> : <Navigate to="/" />} />
-        <Route path="/reset-password/:token" element={!isAuthenticated ? <ResetPassword /> : <Navigate to="/" />} /> */}
+    <Provider store={store}>
+      <Router>
+        <ToastContainer position="top-right" autoClose={3000} />
+        <Routes>
+          {/* Public routes */}
+          <Route path="/" element={!isAuthenticated ? <Home /> : <Navigate to="/dashboard" />} />
+          <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/dashboard" />} />
+          <Route path="/register" element={!isAuthenticated ? <Register /> : <Navigate to="/dashboard" />} />
+          {/* <Route path="/forgot-password" element={!isAuthenticated ? <ForgotPassword /> : <Navigate to="/" />} />
+          <Route path="/reset-password/:token" element={!isAuthenticated ? <ResetPassword /> : <Navigate to="/" />} /> */}
 
-        {/* Protected routes */}
-        <Route element={<PrivateRoute><Layout /></PrivateRoute>}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/browse-jobs" element={<BrowseJobs />} />
-          <Route path="/post-job" element={<PostJob />} />
-          <Route path="/applications" element={<Applications />} />
-          <Route path="/notifications" element={<Notifications />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/review-applicants/:jobId" element={<ReviewApplicants />} />
-          <Route path="/my-jobs" element={<MyJobs />} />
-          {/* <Route path="/messages" element={<Messages />} />
-          <Route path="/settings" element={<Settings />} /> */}
-        </Route>
+          {/* Protected routes */}
+          <Route element={<PrivateRoute><Layout /></PrivateRoute>}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/browse-jobs" element={<BrowseJobs />} />
+            <Route path="/post-job" element={<PostJob />} />
+            <Route path="/applications" element={<Applications />} />
+            <Route path="/notifications" element={<Notifications />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/review-applicants/:jobId" element={<ReviewApplicants />} />
+            <Route path="/my-jobs" element={<MyJobs />} />
+            {/* <Route path="/messages" element={<Messages />} />
+            <Route path="/settings" element={<Settings />} /> */}
+          </Route>
 
-        {/* Catch all route */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </Router>
+          {/* Catch all route */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Router>
+    </Provider>
   );
 }
 

@@ -11,7 +11,9 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true
+    required: function() {
+      return this.authProvider === 'local';
+    }
   },
   firstName: {
     type: String,
@@ -25,6 +27,16 @@ const userSchema = new mongoose.Schema({
   },
   profilePicture: {
     type: String
+  },
+  googleId: {
+    type: String,
+    unique: true,
+    sparse: true
+  },
+  authProvider: {
+    type: String,
+    enum: ['local', 'google'],
+    default: 'local'
   },
   phone: {
     type: String,
@@ -98,7 +110,8 @@ const userSchema = new mongoose.Schema({
 
 // Hash password before saving
 userSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) return next();
+  // Only hash the password if it's modified and the user is using local authentication
+  if (!this.isModified('password') || this.authProvider !== 'local') return next();
   
   try {
     const salt = await bcrypt.genSalt(10);
@@ -111,11 +124,13 @@ userSchema.pre('save', async function(next) {
 
 // Method to compare password
 userSchema.methods.comparePassword = async function(candidatePassword) {
+  if (this.authProvider !== 'local' || !this.password) return false;
   return bcrypt.compare(candidatePassword, this.password);
 };
 
 // Create indexes
 userSchema.index({ email: 1 }, { unique: true });
+userSchema.index({ googleId: 1 }, { unique: true, sparse: true });
 userSchema.index({ skills: 1 });
 userSchema.index({ preferredRoles: 1 });
 
