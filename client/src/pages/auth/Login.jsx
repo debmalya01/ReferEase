@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button } from '../../components/ui/button';
@@ -6,8 +6,12 @@ import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import { Alert, AlertDescription } from '../../components/ui/alert';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../../components/ui/card';
-import { login } from '../../store/slices/authSlice';
+
+import { login, googleAuth, clearError } from '../../store/slices/authSlice';
 import { ArrowLeft } from 'lucide-react';
+import { GoogleLogin } from '@react-oauth/google';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -18,11 +22,6 @@ const Login = () => {
     password: '',
   });
 
-  useEffect(() => {
-    // Apply dark mode class to document
-    document.documentElement.classList.add('dark');
-  }, []);
-
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -32,11 +31,45 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const result = await dispatch(login(formData));
-    if (!result.error) {
-      navigate('/dashboard');
+    try {
+      const result = await dispatch(login(formData)).unwrap();
+      if (result.user) {
+        toast.success('Login successful!');
+        navigate('/dashboard');
+      }
+    } catch (error) {
+      toast.error(error.message);
     }
   };
+
+  const handleGoogleSuccess = async (response) => {
+    try {
+      const result = await dispatch(googleAuth(response.credential)).unwrap();
+      if (result.user) {
+        toast.success('Login successful!');
+        navigate('/dashboard');
+      }
+    } catch (error) {
+      if (error.requiresRegistration) {
+        navigate('/register', { 
+          state: { 
+            googleData: error.googleData,
+            fromGoogle: true 
+          } 
+        });
+      } else {
+        toast.error(error.message);
+      }
+    }
+  };
+
+  const handleGoogleError = () => {
+    toast.error('Google login failed. Please try again.');
+  };
+
+  React.useEffect(() => {
+    dispatch(clearError());
+  }, [dispatch]);
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
@@ -89,15 +122,7 @@ const Login = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="password">Password</Label>
-                    <Link
-                      to="/forgot-password"
-                      className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                    >
-                      Forgot password?
-                    </Link>
-                  </div>
+                  <Label htmlFor="password">Password</Label>
                   <Input
                     id="password"
                     name="password"
@@ -110,23 +135,31 @@ const Login = () => {
                 </div>
               </CardContent>
               <CardFooter className="flex flex-col space-y-4">
-                <Button 
-                  type="submit" 
-                  className="w-full text-lg font-medium" 
-                  size="lg"
-                  disabled={loading}
-                >
+                <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? 'Signing in...' : 'Sign in'}
                 </Button>
-                <p className="text-sm text-center text-muted-foreground">
-                  Don't have an account?{' '}
-                  <Link
-                    to="/register"
-                    className="text-primary hover:text-primary/80 transition-colors font-medium"
-                  >
-                    Sign up
-                  </Link>
-                </p>
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-background px-2 text-muted-foreground">
+                      Or continue with
+                    </span>
+                  </div>
+                </div>
+                <div className="mt-6 flex justify-center">
+                  <GoogleLogin
+                    onSuccess={handleGoogleSuccess}
+                    onError={handleGoogleError}
+                    useOneTap
+                    auto_select
+                    theme="filled_black"
+                    size="large"
+                    shape="rectangular"
+                    width="300"
+                  />
+                </div>
               </CardFooter>
             </form>
           </Card>
