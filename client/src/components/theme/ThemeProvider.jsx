@@ -2,8 +2,8 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 
 const ThemeContext = createContext();
 
-export function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState('light');
+export function ThemeProvider({ children, defaultTheme = 'light' }) {
+  const [theme, setTheme] = useState(defaultTheme);
 
   // Initialize theme from local storage or system preference
   useEffect(() => {
@@ -13,8 +13,10 @@ export function ThemeProvider({ children }) {
       setTheme(storedTheme);
     } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
       setTheme('dark');
+    } else {
+      setTheme(defaultTheme);
     }
-  }, []);
+  }, [defaultTheme]);
 
   // Update body class and localStorage when theme changes
   useEffect(() => {
