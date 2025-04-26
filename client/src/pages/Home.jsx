@@ -29,11 +29,6 @@ const FeatureCard = ({ icon, title, description }) => {
 };
 
 const Home = () => {
-  useEffect(() => {
-    // Apply dark mode class to document
-    document.documentElement.classList.add('dark');
-  }, []);
-
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       {/* Navigation */}

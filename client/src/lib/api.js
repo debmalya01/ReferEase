@@ -6,6 +6,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true, // This ensures cookies are sent with requests
 });
 
 // Add request interceptor for authentication
@@ -43,6 +44,7 @@ export const authAPI = {
   completeGoogleRegistration: (googleData, role) => api.post('/auth/google/complete', { googleData, role }),
   forgotPassword: (email) => api.post('/auth/forgot-password', { email }),
   resetPassword: (token, password) => api.post('/auth/reset-password', { token, password }),
+  getProfile: () => api.get('/auth/me'),
 };
 
 // Users API

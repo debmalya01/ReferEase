@@ -27,11 +27,6 @@ const Register = () => {
   });
   const [passwordError, setPasswordError] = useState('');
 
-  useEffect(() => {
-    // Apply dark mode class to document
-    document.documentElement.classList.add('dark');
-  }, []);
-
   const handleChange = (e) => {
     setFormData({
       ...formData,
