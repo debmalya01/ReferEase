@@ -3,6 +3,17 @@ const User = require('../models/User');
 
 const auth = async (req, res, next) => {
   try {
+    // First check if user is authenticated via session
+    if (req.session && req.session.userId) {
+      const user = await User.findById(req.session.userId).select('-password');
+      
+      if (user) {
+        req.user = user;
+        return next();
+      }
+    }
+    
+    // If no session, fall back to JWT token authentication
     const token = req.header('Authorization')?.replace('Bearer ', '');
     
     if (!token) {
@@ -15,6 +26,9 @@ const auth = async (req, res, next) => {
     if (!user) {
       throw new Error();
     }
+
+    // Store user in session for future requests
+    req.session.userId = user._id;
 
     req.user = user;
     req.token = token;
