@@ -68,8 +68,9 @@ const Profile = ({
   });
 
   useEffect(() => {
+    // Remove dark mode class addition
     // Add dark mode class to document by default
-    document.documentElement.classList.add('dark');
+    // document.documentElement.classList.add('dark');
     
     // Update local state when user data changes
     if (user) {

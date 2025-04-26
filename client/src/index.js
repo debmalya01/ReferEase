@@ -6,14 +6,26 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import { ThemeProvider } from './components/theme/ThemeProvider';
+
+// Apply dark mode directly to the document element
+// This ensures dark mode is applied before any rendering
+if (localStorage.getItem('theme') === 'dark' || 
+    (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+  document.documentElement.classList.add('dark');
+} else {
+  document.documentElement.classList.remove('dark');
+}
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <Provider store={store}>
-      <GoogleOAuthProvider clientId="719573351203-tv3hn2cnka5h1e8l6o8hk818nulel00q.apps.googleusercontent.com">
-        <App />
-      </GoogleOAuthProvider>
+      <ThemeProvider defaultTheme="dark">
+        <GoogleOAuthProvider clientId="719573351203-tv3hn2cnka5h1e8l6o8hk818nulel00q.apps.googleusercontent.com">
+          <App />
+        </GoogleOAuthProvider>
+      </ThemeProvider>
     </Provider>
   </React.StrictMode>
 );

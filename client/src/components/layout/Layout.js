@@ -44,8 +44,6 @@ const Layout = () => {
 
   useEffect(() => {
     dispatch(fetchNotifications());
-    // Add dark mode class to document
-    document.documentElement.classList.add('dark');
   }, [dispatch]);
 
   const handleDrawerToggle = () => {
