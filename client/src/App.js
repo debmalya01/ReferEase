@@ -1,7 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+
 import { Toaster } from 'sonner';
+import { Provider } from 'react-redux';
+// import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { store } from './store';
+import { getCurrentUser } from './store/slices/authSlice';
 
 // Layout components
 import Layout from './components/layout/Layout';
@@ -26,8 +32,16 @@ import MyJobs from './components/jobs/MyJobs';
 // import Messages from './pages/Messages';
 // import Settings from './pages/Settings';
 
-function App() {
-  const { isAuthenticated } = useSelector((state) => state.auth);
+function AppContent() {
+  const dispatch = useDispatch();
+  const { isAuthenticated, loading, token } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    // If there's a token in localStorage, try to get the current user
+    if (token) {
+      dispatch(getCurrentUser());
+    }
+  }, [dispatch, token]);
 
   return (
     <Router>
@@ -58,6 +72,14 @@ function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
+  );
+}
+
+function App() {
+  return (
+    <Provider store={store}>
+      <AppContent />
+    </Provider>
   );
 }
 

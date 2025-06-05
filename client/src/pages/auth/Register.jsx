@@ -8,7 +8,10 @@ import { Alert, AlertDescription } from '../../components/ui/alert';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../../components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
 import { register } from '../../store/slices/authSlice';
-import { ArrowLeft, Crown } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
+import { GoogleLogin } from '@react-oauth/google';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Register = () => {
   const dispatch = useDispatch();
@@ -23,11 +26,6 @@ const Register = () => {
     role: ''
   });
   const [passwordError, setPasswordError] = useState('');
-
-  useEffect(() => {
-    // Apply dark mode class to document
-    document.documentElement.classList.add('dark');
-  }, []);
 
   const handleChange = (e) => {
     setFormData({
@@ -70,6 +68,43 @@ const Register = () => {
     }
   };
 
+  const handleGoogleSuccess = async (response) => {
+    try {
+      // Extract user data from Google credential
+      const base64Url = response.credential.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+      
+      const googleData = JSON.parse(jsonPayload);
+      
+      // Create registration data with Google information
+      const registrationData = {
+        firstName: googleData.given_name,
+        lastName: googleData.family_name,
+        email: googleData.email,
+        googleId: response.credential,
+        authProvider: 'google',
+        role: formData.role || 'jobseeker' // Default role if not selected
+      };
+
+      const result = await dispatch(register(registrationData)).unwrap();
+      
+      if (result.user) {
+        toast.success('Registration successful!');
+        navigate('/dashboard');
+      }
+    } catch (error) {
+      console.error('Google registration error:', error);
+      toast.error(error.message || 'Registration failed. Please try again.');
+    }
+  };
+
+  const handleGoogleError = () => {
+    toast.error('Google authentication failed. Please try again.');
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
       <div className="container flex-1 flex items-center justify-center py-8">
@@ -81,10 +116,15 @@ const Register = () => {
                   <ArrowLeft className="h-4 w-4" />
                 </Link>
               </Button>
-              <div className="flex items-center space-x-2">
-                <Crown className="h-6 w-6 text-primary" />
-                <h1 className="text-2xl font-bold text-primary">ReferEase</h1>
-              </div>
+              <Link to="/" className="flex items-center">
+                <div className="h-10 flex items-center overflow-hidden">
+                  <img 
+                    src="/BackDoor_Logo_Dark1.png" 
+                    alt="BackDoor Logo" 
+                    className="max-h-[200%] w-auto" 
+                  />
+                </div>
+              </Link>
             </div>
           </div>
           
@@ -197,12 +237,31 @@ const Register = () => {
                 >
                   {loading ? 'Creating account...' : 'Create account'}
                 </Button>
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-background px-2 text-muted-foreground">
+                      Or continue with
+                    </span>
+                  </div>
+                </div>
+                <div className="mt-6 flex justify-center">
+                  <GoogleLogin
+                    onSuccess={handleGoogleSuccess}
+                    onError={handleGoogleError}
+                    useOneTap
+                    auto_select
+                    theme="filled_black"
+                    size="large"
+                    shape="rectangular"
+                    width="300"
+                  />
+                </div>
                 <p className="text-sm text-center text-muted-foreground">
                   Already have an account?{' '}
-                  <Link
-                    to="/login"
-                    className="text-primary hover:text-primary/80 transition-colors font-medium"
-                  >
+                  <Link to="/login" className="text-primary hover:underline">
                     Sign in
                   </Link>
                 </p>
