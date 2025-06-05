@@ -29,22 +29,21 @@ const FeatureCard = ({ icon, title, description }) => {
 };
 
 const Home = () => {
-  useEffect(() => {
-    // Apply dark mode class to document
-    document.documentElement.classList.add('dark');
-  }, []);
-
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       {/* Navigation */}
       <header className="border-b border-border sticky top-0 bg-card/80 backdrop-blur-sm z-50 shadow-sm">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-2 group">
-            <h1 className="text-3xl font-bold text-primary group-hover:text-primary/90 transition-colors font-mono tracking-tight">
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary/90 to-primary/70">
-                Vouchin
-              </span>
-            </h1>
+            <Link to="/">
+              <div className="h-16 flex items-center overflow-hidden">
+                <img 
+                  src="/BackDoor_Logo_Dark1.png" 
+                  alt="BackDoor Logo" 
+                  className="max-h-[200%] w-auto" 
+                />
+              </div>
+            </Link>
           </div>
           <div className="space-x-4">
             <Button variant="ghost" className="hover:bg-primary/10 hover:text-primary transition-colors" asChild>
@@ -76,7 +75,7 @@ const Home = () => {
               Your Fast Track to Dream Jobs
             </h1>
             <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto animate-fade-in-up delay-100">
-              Connect with industry professionals, get referrals, and land your dream job with Vouchin's powerful networking platform.
+              Connect with industry professionals, get referrals, and land your dream job with BackDoor's powerful networking platform.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4 animate-fade-in-up delay-200">
               <Button size="lg" className="text-lg bg-primary hover:bg-primary/90 group" asChild>
@@ -120,7 +119,7 @@ const Home = () => {
       <section className="py-24 bg-background/80">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold mb-4 text-primary">Why Choose Vouchin?</h2>
+            <h2 className="text-3xl font-bold mb-4 text-primary">Why Choose BackDoor?</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
               Our platform provides everything you need to accelerate your job search and career growth
             </p>
@@ -166,7 +165,7 @@ const Home = () => {
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold mb-4 text-primary">How It Works</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Get started with Vouchin in three simple steps
+              Get started with BackDoor in three simple steps
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
@@ -195,7 +194,7 @@ const Home = () => {
         <div className="container mx-auto px-4 text-center relative z-10">
           <h2 className="text-3xl font-bold mb-6">Ready to Transform Your Career?</h2>
           <p className="text-xl mb-8 max-w-2xl mx-auto opacity-90">
-            Join thousands of professionals who have already found their dream jobs through Vouchin.
+            Join thousands of professionals who have already found their dream jobs through BackDoor.
           </p>
           <Button size="lg" variant="secondary" className="text-lg bg-black/80 text-white border-none hover:bg-black/90 group" asChild>
             <Link to="/register" className="flex items-center">
@@ -244,14 +243,16 @@ const Home = () => {
             </div>
           </div>
           <div className="pt-8 border-t border-slate-800 text-center text-sm text-slate-400">
-            <div className="flex items-center justify-center space-x-2 mb-4">
-              <span className="text-2xl font-bold text-primary font-mono tracking-tight">
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary/90 to-primary/70">
-                  Vouchin
-                </span>
-              </span>
+            <div className="flex items-center justify-center mb-4">
+              <div className="h-14 flex items-center overflow-hidden">
+                <img 
+                  src="/BackDoor_Logo_Dark1.png" 
+                  alt="BackDoor Logo" 
+                  className="max-h-[200%] w-auto" 
+                />
+              </div>
             </div>
-            <p>© {new Date().getFullYear()} Vouchin. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} BackDoor. All rights reserved.</p>
           </div>
         </div>
       </footer>

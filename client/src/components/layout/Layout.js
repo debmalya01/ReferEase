@@ -44,8 +44,6 @@ const Layout = () => {
 
   useEffect(() => {
     dispatch(fetchNotifications());
-    // Add dark mode class to document
-    document.documentElement.classList.add('dark');
   }, [dispatch]);
 
   const handleDrawerToggle = () => {
@@ -77,8 +75,13 @@ const Layout = () => {
         <SheetContent side="left" className="w-64 p-0 bg-card border-r border-border">
           <SheetHeader className="p-6 border-b border-border">
             <SheetTitle className="text-2xl font-bold flex items-center gap-2">
-              <Crown className="h-6 w-6 text-primary" />
-              ReferEase
+              <div className="h-10 flex items-center overflow-hidden">
+                <img 
+                  src="/BackDoor_Logo_Dark1.png" 
+                  alt="BackDoor Logo" 
+                  className="max-h-[200%] w-auto" 
+                />
+              </div>
             </SheetTitle>
           </SheetHeader>
           <div className="py-4">
@@ -112,8 +115,13 @@ const Layout = () => {
       <aside className="hidden lg:flex w-64 flex-col border-r border-border bg-card">
         <div className="p-6 border-b border-border">
           <h1 className="text-2xl font-bold flex items-center gap-2">
-            <Crown className="h-6 w-6 text-primary" />
-            ReferEase
+            <div className="h-10 flex items-center overflow-hidden">
+              <img 
+                src="/BackDoor_Logo_Dark1.png" 
+                alt="BackDoor Logo" 
+                className="max-h-[200%] w-auto" 
+              />
+            </div>
           </h1>
         </div>
         <div className="py-4 flex-1">
