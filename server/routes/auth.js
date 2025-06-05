@@ -50,6 +50,9 @@ router.post('/register', async (req, res) => {
       { expiresIn: '7d' }
     );
 
+    // Store user ID in session
+    req.session.userId = user._id;
+
     res.status(201).json({
       message: 'Registration successful',
       token,
@@ -91,6 +94,9 @@ router.post('/login', async (req, res) => {
       { expiresIn: '7d' }
     );
 
+    // Store user ID in session
+    req.session.userId = user._id;
+
     res.json({
       message: 'Login successful',
       token,
@@ -119,7 +125,14 @@ router.get('/me', auth, async (req, res) => {
 
 // Logout user (client-side token removal)
 router.post('/logout', auth, (req, res) => {
-  res.json({ message: 'Logged out successfully' });
+  // Destroy session
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).json({ message: 'Error logging out' });
+    }
+    res.clearCookie('connect.sid');
+    res.json({ message: 'Logged out successfully' });
+  });
 });
 
 // Google authentication
@@ -174,6 +187,9 @@ router.post('/google', async (req, res) => {
         process.env.JWT_SECRET,
         { expiresIn: '7d' }
       );
+
+      // Store user ID in session
+      req.session.userId = user._id;
 
       res.json({
         message: 'Login successful',

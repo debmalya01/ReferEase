@@ -5,6 +5,9 @@ const dotenv = require('dotenv');
 const http = require('http');
 const socketIo = require('socket.io');
 const path = require('path');
+const session = require('express-session');
+const { createClient } = require('redis');
+const { RedisStore } = require('connect-redis');
 
 // Load environment variables
 dotenv.config();
@@ -12,6 +15,32 @@ dotenv.config();
 // Create Express app
 const app = express();
 const server = http.createServer(app);
+
+// Setup Redis client
+let redisClient;
+
+if (process.env.NODE_ENV === 'production') {
+  // For production, use the Redis URL from environment variable
+  redisClient = createClient({
+    url: process.env.REDIS_URL
+  });
+} else {
+  // For development, use the Redis URL from env or default
+  redisClient = createClient({
+    url: process.env.REDIS_URL || 'redis://localhost:6379'
+  });
+}
+
+// Initialize Redis connection
+redisClient.connect().catch(err => console.error('Redis connection error:', err));
+redisClient.on('error', (err) => console.log('Redis Client Error', err));
+redisClient.on('connect', () => console.log('Connected to Redis'));
+
+// Initialize RedisStore - Connect Redis v8
+const redisStore = new RedisStore({
+  client: redisClient,
+  prefix: "referease:"
+});
 
 // CORS configuration
 const corsOptions = {
@@ -25,6 +54,20 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Configure session middleware
+app.use(session({
+  store: redisStore,
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production', // true in production
+    httpOnly: true,
+    maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+  }
+}));
 
 // Add security headers
 app.use((req, res, next) => {
